@@ -1,0 +1,49 @@
+name: Deploy FinControl to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Genera config.js a partir de los Secrets del repo
+      - name: Generate config.js
+        run: |
+          cat > config.js << 'EOF'
+          window.APP_CONFIG = {
+            supabaseUrl:    "${{ secrets.SUPABASE_URL }}",
+            supabaseKey:    "${{ secrets.SUPABASE_KEY }}",
+            googleClientId: "${{ secrets.GOOGLE_CLIENT_ID }}",
+          };
+          EOF
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
