@@ -305,14 +305,18 @@ a { text-decoration: none; color: inherit; }
   display: flex; align-items: center; justify-content: center; gap: 10px;
   padding: 11px 16px; background: var(--clr-bg3); border: 1px solid var(--clr-border);
   border-radius: var(--card-radius); color: var(--clr-text); font-size: 13px;
-  font-family: var(--font-body); transition: all 0.2s; position: relative;
+  font-family: var(--font-body); transition: all 0.2s;
 }
 .btn-google:hover { border-color: var(--clr-accent); background: var(--clr-hover); }
-.coming-soon-badge {
-  position: absolute; top: -8px; right: 8px;
-  background: var(--clr-warn); color: #000;
-  font-size: 8px; font-family: var(--font-mono);
-  padding: 1px 6px; border-radius: 10px; letter-spacing: 1px;
+.auth-error {
+  background: rgba(200,0,0,0.08);
+  border: 1px solid var(--clr-danger);
+  border-radius: var(--card-radius);
+  color: var(--clr-danger);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 8px 12px;
+  letter-spacing: 0.5px;
 }
 .auth-divider { text-align: center; color: var(--clr-muted); font-size: 11px; font-family: var(--font-mono); position: relative; }
 .auth-divider::before, .auth-divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--clr-border); }
@@ -331,7 +335,12 @@ a { text-decoration: none; color: inherit; }
   font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; transition: all 0.2s;
 }
 .btn-auth-demo:hover { border-color: var(--clr-accent2); color: var(--clr-accent2); }
-.auth-note { font-size: 10px; color: var(--clr-muted); font-family: var(--font-mono); line-height: 1.5; text-align: center; }
+
+/* Avatar con foto de Google */
+.avatar-img {
+  width: 34px; height: 34px; border-radius: 50%;
+  object-fit: cover; position: absolute; inset: 0;
+}
 
 /* ══════════════════════════════════════════════════════
    TOPNAV
@@ -906,4 +915,107 @@ a { text-decoration: none; color: inherit; }
   background: radial-gradient(ellipse at 50% 0%, rgba(0,122,255,0.04) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
+}
+
+/* ══════════════════════════════════════════════════════
+   CALCULATOR FAB & PANEL
+══════════════════════════════════════════════════════ */
+.calc-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 900;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--clr-accent);
+  color: #fff;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: var(--shadow-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .15s, opacity .15s;
+}
+.calc-fab:hover { transform: scale(1.1); }
+.calc-fab .material-symbols-outlined { font-size: 26px; line-height: 1; }
+
+.calc-panel {
+  position: fixed;
+  bottom: 92px;
+  right: 28px;
+  z-index: 901;
+  width: 280px;
+  background: var(--clr-bg2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+}
+.calc-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--clr-border);
+}
+.calc-panel-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--clr-muted);
+  letter-spacing: .05em;
+}
+.calc-panel-close {
+  background: none;
+  border: none;
+  color: var(--clr-muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+.calc-panel-screen {
+  padding: 12px 14px 4px;
+}
+.calc-expression {
+  font-size: 11px;
+  color: var(--clr-muted);
+  min-height: 16px;
+  text-align: right;
+  font-family: var(--font-mono);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.calc-display {
+  font-size: 28px;
+  font-family: var(--font-mono);
+  text-align: right;
+  color: var(--clr-text);
+  padding: 4px 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.calc-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 0 12px 12px;
+}
+.calc-copy-wrap {
+  padding: 0 12px 12px;
+}
+.calc-copy-btn {
+  width: 100%;
+  padding: 7px;
+  background: rgba(128,128,128,0.1);
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  color: var(--clr-muted);
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: .05em;
 }
