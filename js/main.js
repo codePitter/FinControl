@@ -269,41 +269,103 @@ function applyStateData(data) {
   if (data.goalIdCounter)   State.goalIdCounter   = data.goalIdCounter;
 }
 
+// ── Obtiene el UUID de Supabase del usuario actual ──────────────────────────
+// Primero usa el id que el onAuthStateChange ya nos pasó (sin round-trip),
+// y sólo llama a getUser() como fallback.
+async function getSupabaseUid() {
+  // Camino rápido: el uid ya fue guardado en State.user al hacer login
+  if (State.user?.supabaseId) return State.user.supabaseId;
+  if (!sb) return null;
+  try {
+    const { data: { user }, error } = await sb.auth.getUser();
+    if (error || !user) return null;
+    // Guardarlo para futuros llamados
+    if (State.user) State.user.supabaseId = user.id;
+    return user.id;
+  } catch { return null; }
+}
+
 async function saveState() {
   if (!State.user || State.user.provider === 'demo') return;
   const data = getStateData();
 
-  // Siempre guardar en localStorage como respaldo offline
-  localStorage.setItem('fc-data-' + State.user.email, JSON.stringify(data));
-
-  // Guardar en Supabase si está disponible y hay sesión activa
-  if (!sb) return;
+  // 1. localStorage SIEMPRE — garantiza persistencia offline ─────────────────
   try {
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) return;
-    await sb.from('user_data').upsert({ id: user.id, data, updated_at: new Date().toISOString() });
-  } catch (e) { /* falla silenciosa — localStorage ya guardó */ }
+    localStorage.setItem('fc-data-' + State.user.email, JSON.stringify(data));
+  } catch (e) { console.warn('[FC] localStorage error:', e); }
+
+  // 2. Supabase — sólo si tenemos un uid válido ─────────────────────────────
+  if (!sb) return;
+  const uid = await getSupabaseUid();
+  if (!uid) return; // usuario local sin sesión Supabase → localStorage fue suficiente
+
+  try {
+    const { error } = await sb
+      .from('user_data')
+      .upsert({ id: uid, data, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+    if (error) {
+      console.error('[FC] saveState error:', error.message, error.details);
+      showSyncStatus('error');
+    } else {
+      showSyncStatus('ok');
+    }
+  } catch (e) { console.error('[FC] saveState excepción:', e); }
 }
 
 async function loadState() {
   if (!State.user || State.user.provider === 'demo') return;
 
-  // Intentar cargar desde Supabase primero
+  // 1. Supabase (fuente de verdad en la nube) ───────────────────────────────
   if (sb) {
-    try {
-      const { data: { user } } = await sb.auth.getUser();
-      if (user) {
-        const { data: row } = await sb.from('user_data').select('data').eq('id', user.id).single();
-        if (row?.data) { applyStateData(row.data); return; }
-      }
-    } catch (e) { /* fallback a localStorage */ }
+    const uid = await getSupabaseUid();
+    if (uid) {
+      try {
+        const { data: row, error } = await sb
+          .from('user_data')
+          .select('data')
+          .eq('id', uid)
+          .single();
+
+        if (!error && row?.data) {
+          applyStateData(row.data);
+          console.debug('[FC] Datos cargados desde Supabase ✓');
+          return;
+        }
+        if (error && error.code !== 'PGRST116') { // PGRST116 = fila no encontrada (primera vez)
+          console.warn('[FC] loadState Supabase error:', error.message);
+        }
+      } catch (e) { console.warn('[FC] loadState excepción:', e); }
+    }
   }
 
-  // Fallback: localStorage
+  // 2. localStorage (fallback offline) ─────────────────────────────────────
   try {
     const raw = localStorage.getItem('fc-data-' + State.user.email);
-    if (raw) applyStateData(JSON.parse(raw));
-  } catch { /* datos corruptos */ }
+    if (raw) {
+      applyStateData(JSON.parse(raw));
+      console.debug('[FC] Datos cargados desde localStorage ✓');
+    }
+  } catch { /* datos corruptos — empieza en blanco */ }
+}
+
+// Indicador visual de sync en el nav (pequeño dot)
+function showSyncStatus(status) {
+  let dot = document.getElementById('syncDot');
+  if (!dot) {
+    dot = document.createElement('span');
+    dot.id = 'syncDot';
+    dot.title = '';
+    dot.style.cssText = 'width:7px;height:7px;border-radius:50%;display:inline-block;margin-left:6px;flex-shrink:0;transition:background 0.4s';
+    const dateEl = document.getElementById('navDate');
+    if (dateEl) dateEl.after(dot);
+  }
+  if (status === 'ok') {
+    dot.style.background = 'var(--clr-success)';
+    dot.title = 'Datos guardados en la nube ✓';
+  } else {
+    dot.style.background = 'var(--clr-warn)';
+    dot.title = 'Guardado solo en local (error de conexión)';
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -418,8 +480,16 @@ function clearAuthErrors() {
 }
 
 function enterApp(user) {
+  // Evitar re-inicializar si ya estamos logueados con el mismo usuario
+  // (puede ocurrir si onAuthStateChange dispara múltiples veces)
+  if (State.user && State.user.email === user.email && State.user.supabaseId) return;
+
   State.user = user;
-  if (user.provider !== 'demo') localStorage.setItem('fc-session', JSON.stringify(user));
+  if (user.provider !== 'demo') {
+    // Guardar sesión sin el supabaseId (dato interno, no necesario persistir)
+    const { supabaseId: _, ...sessionData } = user;
+    localStorage.setItem('fc-session', JSON.stringify(sessionData));
+  }
 
   document.getElementById('authScreen').classList.add('hidden');
   document.getElementById('appShell').classList.remove('hidden');
@@ -1506,24 +1576,27 @@ window.addEventListener('load', async () => {
       if (session?.user) {
         const u = session.user;
         const name = u.user_metadata?.name || u.email.split('@')[0];
+        // Pasamos supabaseId directamente desde el objeto session
+        // → evita la race condition de llamar getUser() justo después del login
         enterApp({
           name,
-          email:    u.email,
-          picture:  u.user_metadata?.avatar_url || u.user_metadata?.picture || null,
-          avatar:   name.charAt(0).toUpperCase(),
-          provider: u.app_metadata?.provider || 'supabase'
+          email:      u.email,
+          picture:    u.user_metadata?.avatar_url || u.user_metadata?.picture || null,
+          avatar:     name.charAt(0).toUpperCase(),
+          provider:   u.app_metadata?.provider || 'supabase',
+          supabaseId: u.id,   // ← clave del fix: uid disponible SIN llamar getUser()
         });
       } else if (event === 'SIGNED_OUT') {
         // ya manejado en logout()
       }
     });
 
-    // Verificar si ya hay sesión activa
+    // Verificar si ya hay sesión activa (ej: recarga de página con cookie válida)
     const { data: { session } } = await sb.auth.getSession();
-    if (session) return; // onAuthStateChange lo manejará
+    if (session) return; // onAuthStateChange la manejará
   }
 
-  // Fallback: restaurar sesión de localStorage (modo sin Supabase)
+  // Fallback: restaurar sesión de localStorage (usuarios locales o sin Supabase)
   const saved = localStorage.getItem('fc-session');
   if (saved) {
     try {

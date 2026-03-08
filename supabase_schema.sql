@@ -1,36 +1,24 @@
--- ══════════════════════════════════════════════════════
--- FINCONTROL — Supabase Schema
--- Ejecutar en: Supabase Dashboard → SQL Editor
--- ══════════════════════════════════════════════════════
+-- Ejecutar en Supabase SQL Editor
 
--- Tabla principal: un registro por usuario con todos sus datos en JSONB
 create table if not exists user_data (
   id          uuid primary key references auth.users(id) on delete cascade,
   data        jsonb not null default '{}',
-  updated_at  timestamptz default now()
+  updated_at  timestamptz not null default now()
 );
 
--- Row Level Security: cada usuario solo ve y modifica sus propios datos
 alter table user_data enable row level security;
 
-create policy "Usuarios pueden leer sus datos"
-  on user_data for select
-  using (auth.uid() = id);
+drop policy if exists "user_data_select" on user_data;
+drop policy if exists "user_data_insert" on user_data;
+drop policy if exists "user_data_update" on user_data;
+drop policy if exists "user_data_delete" on user_data;
 
-create policy "Usuarios pueden insertar sus datos"
-  on user_data for insert
-  with check (auth.uid() = id);
+create policy "user_data_select" on user_data for select using (auth.uid() = id);
+create policy "user_data_insert" on user_data for insert with check (auth.uid() = id);
+create policy "user_data_update" on user_data for update using (auth.uid() = id);
+create policy "user_data_delete" on user_data for delete using (auth.uid() = id);
 
-create policy "Usuarios pueden actualizar sus datos"
-  on user_data for update
-  using (auth.uid() = id);
-
-create policy "Usuarios pueden eliminar sus datos"
-  on user_data for delete
-  using (auth.uid() = id);
-
--- Trigger para actualizar updated_at automáticamente
-create or replace function update_updated_at()
+create or replace function update_updated_at_column()
 returns trigger as $$
 begin
   new.updated_at = now();
@@ -38,6 +26,7 @@ begin
 end;
 $$ language plpgsql;
 
-create trigger set_updated_at
+drop trigger if exists set_updated_at_user_data on user_data;
+create trigger set_updated_at_user_data
   before update on user_data
-  for each row execute procedure update_updated_at();
+  for each row execute procedure update_updated_at_column();
