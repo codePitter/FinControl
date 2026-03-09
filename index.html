@@ -1,10 +1,49 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="windows" data-mode="light">
 <head>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clarita La Cuenta</title>
+
+  <!-- ═══ FAVICON ═══ -->
+  <link rel="icon" href="img/favicon.png">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23059669'/%3E%3Ccircle cx='50' cy='38' r='22' fill='none' stroke='white' stroke-width='9'/%3E%3Crect x='36' y='58' width='28' height='8' rx='4' fill='white'/%3E%3Crect x='36' y='72' width='18' height='8' rx='4' fill='white'/%3E%3Crect x='58' y='72' width='8' height='8' rx='2' fill='%2386efac'/%3E%3C/svg%3E">
+  <meta name="theme-color" content="#059669">
+
+  <!-- ═══ SEO PRIMARIO ═══ -->
+  <title>Clarita la Cuenta | Finanzas personales sin drama 💚</title>
+  <meta name="description" content="Controlá tus ingresos, gastos y presupuesto mes a mes. Clarita la Cuenta es tu app de finanzas personales gratuita, simple y con buena onda. Ideal para Argentina.">
+  <meta name="keywords" content="finanzas personales, presupuesto personal, control de gastos, ahorro, app finanzas argentina, clarita la cuenta, gestión dinero">
+  <meta name="author" content="Clarita la Cuenta">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://codepitter.github.io/FinControl/">
+
+  <!-- ═══ OPEN GRAPH (Facebook, WhatsApp, LinkedIn) ═══ -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://codepitter.github.io/FinControl/">
+  <meta property="og:title" content="Clarita la Cuenta | Finanzas personales sin drama 💚">
+  <meta property="og:description" content="Controlá tus ingresos, gastos y presupuesto mes a mes. Gratis, simple y con buena onda. Ideal para Argentina.">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Clarita la Cuenta">
+
+  <!-- ═══ TWITTER / X CARD ═══ -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Clarita la Cuenta | Finanzas personales sin drama 💚">
+  <meta name="twitter:description" content="Controlá tus ingresos, gastos y presupuesto mes a mes. Gratis, simple y con buena onda.">
+
+  <!-- ═══ STRUCTURED DATA ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Clarita la Cuenta",
+    "description": "App de finanzas personales gratuita para controlar ingresos, gastos y presupuesto mensual.",
+    "url": "https://codepitter.github.io/FinControl/",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "ARS" },
+    "inLanguage": "es-AR"
+  }
+  </script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -260,6 +299,16 @@
             <div class="chart-wrap"><canvas id="chartDaily"></canvas></div>
           </div>
         </div>
+        <!-- ── Publicidad pie gastos ── -->
+        <div class="ad-footer-wrap">
+          <span class="ad-label">Publicidad</span>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-XXXXXXXXXX"
+               data-ad-slot="XXXXXXXXXX"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+        </div>
       </section>
 
       <!-- ── PRESUPUESTO ── -->
@@ -312,6 +361,17 @@
               <div class="chart-wrap"><canvas id="chartBudget"></canvas></div>
             </div>
           </div>
+        </div>
+
+        <!-- ── Publicidad pie presupuesto ── -->
+        <div class="ad-footer-wrap">
+          <span class="ad-label">Publicidad</span>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-XXXXXXXXXX"
+               data-ad-slot="XXXXXXXXXX"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
         </div>
       </section>
 
@@ -382,6 +442,17 @@
             </div>
           </div>
           <div id="calcResult" class="calc-result"></div>
+        </div>
+
+        <!-- ── Publicidad pie deudas ── -->
+        <div class="ad-footer-wrap">
+          <span class="ad-label">Publicidad</span>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-XXXXXXXXXX"
+               data-ad-slot="XXXXXXXXXX"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
         </div>
       </section>
 
@@ -515,6 +586,17 @@
             <div class="kpi-label">Saldo proyectado anual</div>
             <div class="kpi-value clr-accent" id="anualBalance">$0</div>
           </div>
+        </div>
+
+        <!-- ── Publicidad pie anual ── -->
+        <div class="ad-footer-wrap">
+          <span class="ad-label">Publicidad</span>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-XXXXXXXXXX"
+               data-ad-slot="XXXXXXXXXX"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
         </div>
       </section>
 

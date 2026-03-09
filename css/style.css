@@ -1220,3 +1220,81 @@ a { text-decoration: none; color: inherit; }
   cursor: pointer;
   letter-spacing: .05em;
 }
+/* ═══════════════════════════════════════
+   PUBLICIDAD — No intrusiva
+   ════════════════════════════════════ */
+
+/* Etiqueta "Publicidad" discreta */
+.ad-label {
+  display: block;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--clr-muted);
+  text-align: center;
+  margin-bottom: 4px;
+  opacity: 0.6;
+}
+
+/* Banner horizontal (dentro de secciones) */
+.ad-banner-wrap {
+  margin: 20px 0 4px;
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 90px;   /* evita salto de layout */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ad-banner-wrap ins {
+  width: 100%;
+}
+
+/* Banner pequeño al pie de sección */
+.ad-footer-wrap {
+  margin: 24px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--clr-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 70px;
+}
+.ad-footer-wrap ins {
+  width: 100%;
+  max-width: 728px;
+}
+
+/* Sidebar de publicidad (derecha) */
+.ad-sidebar {
+  position: sticky;
+  top: 80px;
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+}
+.ad-sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.ad-sidebar-slot {
+  width: 160px !important;
+  min-height: 600px;
+}
+
+/* Ocultar sidebar de ad en pantallas chicas */
+@media (max-width: 1200px) {
+  .ad-sidebar { display: none !important; }
+}
+
+/* En móvil, reducir altura mínima para no ocupar tanto espacio */
+@media (max-width: 600px) {
+  .ad-banner-wrap  { min-height: 60px; }
+  .ad-footer-wrap  { min-height: 60px; }
+}
