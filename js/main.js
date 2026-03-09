@@ -231,8 +231,8 @@ function closeThemePanel() {
 // ══════════════════════════════════════════════════════
 // SUPABASE CONFIG — leído desde js/config.js (gitignored)
 // ══════════════════════════════════════════════════════
-const SUPABASE_URL  = (window.APP_CONFIG || {}).supabaseUrl    || 'TU_SUPABASE_URL';
-const SUPABASE_KEY  = (window.APP_CONFIG || {}).supabaseKey    || '';
+const SUPABASE_URL  = (window.APP_CONFIG || {}).supabaseUrl    || 'https://vqlbxuoowzgnlqyahink.supabase.co';
+const SUPABASE_KEY  = (window.APP_CONFIG || {}).supabaseKey    || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxbGJ4dW9vd3pnbmxxeWFoaW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2ODU5NzMsImV4cCI6MjA4ODI2MTk3M30.CC-JUlO662O46HRuR75Ia9AUc8GrusyQ00aIZDoQYvk';
 let sb = null;
 
 function initSupabase() {
@@ -379,7 +379,7 @@ function showSyncStatus(status) {
 // ══════════════════════════════════════════════════════
 // AUTH CONFIG — leído desde js/config.js (gitignored)
 // ══════════════════════════════════════════════════════
-const GOOGLE_CLIENT_ID = (window.APP_CONFIG || {}).googleClientId || '';
+const GOOGLE_CLIENT_ID = (window.APP_CONFIG || {}).googleClientId || '175409993499-v38h85aqn2of4qqem2dfrl2ahu19rmfq.apps.googleusercontent.com';
 
 // ══════════════════════════════════════════════════════
 // AUTH — GOOGLE (vía Supabase OAuth)
